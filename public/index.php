@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use App\Http\Controllers\IndexController;
+use App\Http\Controllers;
 use Dotenv\Dotenv;
 use Slim\Factory\AppFactory;
 use Slim\Views\Twig;
@@ -16,6 +16,8 @@ $app  = AppFactory::create();
 $app->addErrorMiddleware($_ENV['DISPLAY_ERROR_DETAILS'], $_ENV['DISPLAY_ERROR_DETAILS'], $_ENV['DISPLAY_ERROR_DETAILS']);
 $app->add(TwigMiddleware::create($app, $twig));
 
-$app->get('/', IndexController::class . ':home');
+$app->get('/', Controllers\IndexController::class . ':home');
+$app->get('/messages', Controllers\MessagesController::class . ':index');
+$app->post('/messages', Controllers\MessagesController::class . ':send');
 
 $app->run();
