@@ -1,5 +1,11 @@
 {
     "name": "user/kolesa-upgrade-team1-form",
+    "autoload": {
+        "psr-4" : {
+            "App\\" : "src/",
+            "config\\" : "config/"
+        }
+    },
     "require": {
         "slim/slim": "^4.11",
         "slim/psr7": "^1.6",
