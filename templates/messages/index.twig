@@ -1,0 +1,32 @@
+{% extends "base.twig" %}
+
+{% block body %}
+    <h1>Сервис отправки сообщений</h1>
+
+    <form action="/messages" method="post">
+        {% if errors is not empty %}
+            <div style="color: red">При отправке произошла ошибка
+                <ul>
+                    {% for error in errors %}
+                        <li>
+                            {{ error }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        <div>
+            <p><label>Введите сообщение:</label></p>
+            <textarea rows="4" cols="50" name="message">{% if errors is not empty %}{{ message }}{% endif %}</textarea>
+            <br>
+            <br>
+            <input type="submit" value="Отправить">
+        </div>
+    </form>
+    {% if isSend and errors is empty %}
+        <div>
+            <p><label>Отправленное сообщение:</label></p>
+            <p>{{ message }}</p>
+        </div>
+    {% endif %}
+{% endblock %}
