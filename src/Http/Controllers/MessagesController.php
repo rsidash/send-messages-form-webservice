@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\Repository\MessageRepository;
 use App\Model\Validators\MessageValidator;
 use Slim\Http\ServerRequest;
 use Slim\Http\Response;
@@ -11,9 +12,11 @@ class MessagesController
 {
     private MessageValidator $validator;
     private bool $isSend = false;
+    private MessageRepository $repo;
 
     public function __construct()
     {
+        $this->repo = new MessageRepository();
         $this->validator = new MessageValidator();
     }
 
@@ -34,7 +37,12 @@ class MessagesController
 
         $view = Twig::fromRequest($request);
 
-        $this->isSend = true;
+        if (!$errors) {
+            $this->isSend = true;
+
+            $data = ['text' => $message, 'status_id' => 1];
+            $this->repo->create($data);
+        }
 
         return $view->render($response, 'messages/index.twig', [
             'message' => $message,
