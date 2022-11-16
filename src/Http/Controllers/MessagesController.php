@@ -6,7 +6,6 @@ use App\Model\Repository\MessageRepository;
 use App\Model\Validators\MessageValidator;
 use App\services\GuzzleClient;
 use Exception;
-use GuzzleHttp\Exception\GuzzleException;
 use Slim\Http\ServerRequest;
 use Slim\Http\Response;
 use Slim\Views\Twig;
