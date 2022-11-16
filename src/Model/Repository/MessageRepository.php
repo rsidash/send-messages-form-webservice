@@ -22,7 +22,7 @@ class MessageRepository
     {
         $result = [];
 
-        $sql = "SELECT * FROM {$this->table} WHERE deleted_at IS NULL ORDER BY created_at {$orderByDirection};";
+        $sql = "SELECT * FROM {$this->table} WHERE deleted_at IS NULL ORDER BY updated_at {$orderByDirection};";
         $stmt = $this->connection->query($sql);
 
         $records = $stmt->fetchAll(PDO::FETCH_OBJ);
@@ -38,13 +38,29 @@ class MessageRepository
     {
         $result = [];
 
-        $sql = "SELECT * FROM {$this->table} WHERE deleted_at IS NULL AND status_id = :statusId ORDER BY created_at {$orderByDirection};";
+        $sql = "SELECT * FROM {$this->table} WHERE deleted_at IS NULL AND status_id = :statusId ORDER BY updated_at {$orderByDirection};";
 
         $stmt = $this->connection->prepare($sql);
 
         $stmt->bindValue("statusId", $statusId);
 
         $stmt->execute();
+
+        $records = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        foreach ($records as $record) {
+            $result[] = new Message(json_decode(json_encode($record),true));
+        }
+
+        return $result;
+    }
+
+    public function getNotSend()
+    {
+        $result = [];
+
+        $sql = "SELECT * FROM {$this->table} WHERE deleted_at IS NULL AND status_id = 2;";
+        $stmt = $this->connection->query($sql);
 
         $records = $stmt->fetchAll(PDO::FETCH_OBJ);
 
@@ -66,6 +82,23 @@ class MessageRepository
 
         $stmt->bindValue("text", $data['text']);
         $stmt->bindValue("status_id", $data['status_id']);
+
+        $stmt->execute();
+
+        return new Message($data);
+    }
+
+    public function update(array $data): Message
+    {
+        $sql = "UPDATE {$this->table} 
+                SET status_id = :status_id,
+                    updated_at = SYSDATE()
+                WHERE id = :id";
+
+        $stmt = $this->connection->prepare($sql);
+
+        $stmt->bindValue("status_id", $data['status_id']);
+        $stmt->bindValue("id", $data['id']);
 
         $stmt->execute();
 

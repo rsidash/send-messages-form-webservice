@@ -10,7 +10,8 @@ class Message extends AbstractModel
     private ?int $id;
     private ?string $text;
     private ?int $statusId;
-    private string $createdAt;
+    private ?string $createdAt;
+    private ?string $updatedAt;
 
     public function __construct($data = [])
     {
@@ -18,6 +19,7 @@ class Message extends AbstractModel
         $this->text = $data['text'] ?? null;
         $this->statusId = $data['status_id'] ?? null;
         $this->createdAt = $data['created_at'] ?? null;
+        $this->createdAt = $data['updated_at'] ?? null;
     }
 
     public function getId(): ?int
@@ -40,6 +42,23 @@ class Message extends AbstractModel
         return$this->createdAt;
     }
 
+    public function getUpdatedAt(): string
+    {
+        return$this->updatedAt;
+    }
+
+    public function getLastSendDate(): string
+    {
+        $createdAt = strtotime($this->getCreatedAt());
+        $updatedAt = strtotime($this->getCreatedAt());
+
+        if ($updatedAt > $createdAt) {
+            return $this->getUpdatedAt();
+        }
+
+        return $this->getCreatedAt();
+    }
+
     public function getStatus(): ?Status
     {
         $statusId = $this->getStatusId();
@@ -57,7 +76,7 @@ class Message extends AbstractModel
         return [
             'id' => $this->getId(),
             'text' => $this->getText(),
-            'created_at' => $this->getCreatedAt(),
+            'date' => $this->getLastSendDate(),
             'status' => $this->getStatus()->getTitle(),
         ];
     }

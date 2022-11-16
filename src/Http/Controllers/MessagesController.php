@@ -14,6 +14,11 @@ use Slim\Views\Twig;
 
 class MessagesController
 {
+    private const SEND_STATUSES = [
+            'send' => 1,
+            'notSend' => 2,
+        ];
+
     private MessageValidator $validator;
     private GuzzleClient $guzzleClient;
     private MessageRepository $repo;
@@ -60,11 +65,6 @@ class MessagesController
 
     public function send(ServerRequest $request, Response $response)
     {
-        $statuses = [
-            'send' => 1,
-            'notSend' => 2,
-        ];
-
         $message = $request->getParsedBodyParam('message', []);
 
         $validationErrors = $this->validator->validate(['message' => $message]);
@@ -78,13 +78,13 @@ class MessagesController
 
                 if (array_key_exists('error', $jsonDecoded)) {
                     $this->sendError = $jsonDecoded['error'];
-                    $data = ['text' => $message, 'status_id' => $statuses['notSend']];
+                    $data = ['text' => $message, 'status_id' => self::SEND_STATUSES['notSend']];
                 } else {
-                    $data = ['text' => $message, 'status_id' => $statuses['send']];
+                    $data = ['text' => $message, 'status_id' => self::SEND_STATUSES['send']];
                 }
             } catch (Exception | GuzzleException $e) {
                 $this->sendError = $e->getMessage();
-                $data = ['text' => $message, 'status_id' => $statuses['notSend']];
+                $data = ['text' => $message, 'status_id' => self::SEND_STATUSES['notSend']];
             }
 
             $this->repo->create($data);
@@ -95,5 +95,29 @@ class MessagesController
             'validationErrors' => $validationErrors,
             'sendError' => $this->sendError,
         ]);
+    }
+
+    public function resend(ServerRequest $request, Response $response, array $args)
+    {
+        $allNotSendMessages = $this->repo->getNotSend();
+
+        foreach ($allNotSendMessages as $message) {
+            try {
+                $response = $this->guzzleClient->send($_ENV['BOT_API_SEND_ROUTE'], $message->getText());
+                $jsonDecoded = json_decode($response, true);
+
+                if (array_key_exists('error', $jsonDecoded)) {
+                    $data = ['id' => $message->getId(), 'status_id' => self::SEND_STATUSES['notSend']];
+                } else {
+                    $data = ['id' => $message->getId(), 'status_id' => self::SEND_STATUSES['send']];
+                }
+            } catch (Exception | GuzzleException $e) {
+                $data = ['id' => $message->getId(), 'status_id' => self::SEND_STATUSES['notSend']];
+            }
+
+            $this->repo->update($data);
+        }
+
+        return $response->withRedirect('/messages/history');
     }
 }

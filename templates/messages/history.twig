@@ -34,16 +34,24 @@
                 <tr>
                     <th>Текст сообщения</th>
                     <th>Статус</th>
-                    <th>Дата отправки</th>
+                    <th>Дата последней отправки</th>
                 </tr>
                 {% for message in messagesHistory %}
                     <tr>
                         <td>{{ message.getText() }}</td>
                         <td>{{ message.getStatus().getTitle() }}</td>
-                        <td>{{ message.getCreatedAt() }}</td>
+                        <td>{{ message.getLastSendDate() }}</td>
                     </tr>
                 {% endfor %}
             </table>
         </div>
+    </div>
+    <br>
+    <div>
+        <form action="/messages/history" method="post">
+                <div>
+                    <input type="submit" value="Отправить неотправленные">
+                </div>
+        </form>
     </div>
 {% endblock %}

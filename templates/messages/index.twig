@@ -3,6 +3,7 @@
 {% block body %}
     <h1>Сервис отправки сообщений</h1>
 
+    <a href="/messages/history">История сообщений</a>
     <form action="/messages" method="post">
         {% if validationErrors is not empty %}
             <div style="color: red">При отправке произошла ошибка
