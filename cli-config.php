@@ -6,10 +6,6 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\Migrations\Configuration\Connection\ExistingConnection;
 use Doctrine\Migrations\Configuration\Migration\PhpFile;
 use Doctrine\Migrations\DependencyFactory;
-use Dotenv\Dotenv;
-
-$dotenv = Dotenv::createImmutable(__DIR__);
-$dotenv->load();
 
 $config = new PhpFile('migrations.php');
 $params = [
