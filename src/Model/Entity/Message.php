@@ -2,17 +2,22 @@
 
 namespace App\Model\Entity;
 
+use App\Model\Repository\StatusRepository;
+use Exception;
+
 class Message extends AbstractModel
 {
     private ?int $id;
     private ?string $text;
     private ?int $statusId;
+    private string $createdAt;
 
     public function __construct($data = [])
     {
         $this->id = $data['id'] ?? null;
         $this->text = $data['text'] ?? null;
         $this->statusId = $data['status_id'] ?? null;
+        $this->createdAt = $data['created_at'] ?? null;
     }
 
     public function getId(): ?int
@@ -30,12 +35,30 @@ class Message extends AbstractModel
         return $this->statusId;
     }
 
+    public function getCreatedAt(): string
+    {
+        return$this->createdAt;
+    }
+
+    public function getStatus(): ?Status
+    {
+        $statusId = $this->getStatusId();
+        $statusRepo = new StatusRepository();
+
+        try {
+            return $statusRepo->getById($statusId);
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
     public function toArray(): array
     {
         return [
             'id' => $this->getId(),
             'text' => $this->getText(),
-            'status_id' => $this->getStatusId(),
+            'created_at' => $this->getCreatedAt(),
+            'status' => $this->getStatus()->getTitle(),
         ];
     }
 }

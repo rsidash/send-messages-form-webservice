@@ -23,7 +23,7 @@
             <input type="submit" value="Отправить">
         </div>
     </form>
-    {% if sendError is empty and validationErrors is empty %}
+    {% if sendError is empty and validationErrors is empty and not isFirstLaunch %}
         <div>
             <p style="color: green">Сообщение успешно отправлено</p>
             <p><label>Отправленное сообщение:</label></p>
@@ -31,7 +31,7 @@
         </div>
     {% elseif sendError and validationErrors is empty %}
         <div>
-            <p><label>При отправке произошла следующая ошибка:</label></p>
+            <p><label style="color: red">При отправке произошла следующая ошибка:</label></p>
             <p>{{ sendError }}</p>
         </div>
     {% endif %}

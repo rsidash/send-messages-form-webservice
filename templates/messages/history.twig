@@ -1,0 +1,49 @@
+{% extends "base.twig" %}
+
+{% block body %}
+    <h1>История сообщений</h1>
+    <div>
+        <div>
+            <form action="/messages/history" method="get">
+                <div>
+                    <div>
+                        <select name="status_id">
+                            <option value="0">Все статусы</option>
+                            {% for status in statuses %}
+                                <option value={{ status.id }}>{{ status.title }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <input type="submit" value="Отфильтровать">
+                    </div>
+                    <br>
+                    <div>
+                        <select name="orderBy">
+                            <option value="desc">По убыванию даты</option>
+                            <option value="asc">По возрастанию даты</option>
+                        </select>
+
+                        <input type="submit" value="Сортировать">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <br>
+        <div>
+            <table border="1">
+                <tr>
+                    <th>Текст сообщения</th>
+                    <th>Статус</th>
+                    <th>Дата отправки</th>
+                </tr>
+                {% for message in messagesHistory %}
+                    <tr>
+                        <td>{{ message.getText() }}</td>
+                        <td>{{ message.getStatus().getTitle() }}</td>
+                        <td>{{ message.getCreatedAt() }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}

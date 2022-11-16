@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\Repository\MessageRepository;
+use App\Model\Repository\StatusRepository;
 use App\Model\Validators\MessageValidator;
 use App\services\GuzzleClient;
 use Exception;
@@ -16,13 +17,17 @@ class MessagesController
     private MessageValidator $validator;
     private GuzzleClient $guzzleClient;
     private MessageRepository $repo;
-    private string $sendError = '';
+    private string $sendError;
+    private StatusRepository $statusRepo;
+    private array $statuses;
 
     public function __construct()
     {
         $this->repo = new MessageRepository();
         $this->validator = new MessageValidator();
         $this->guzzleClient = new GuzzleClient();
+        $this->statusRepo = new StatusRepository();
+        $this->statuses = $this->statusRepo->getAll();
     }
 
     public function index(ServerRequest $request, Response $response)
@@ -30,7 +35,26 @@ class MessagesController
         $view = Twig::fromRequest($request);
 
         return $view->render($response, 'messages/index.twig', [
-            'sendStatus' => $this->sendError,
+            'isFirstLaunch' => true
+        ]);
+    }
+
+    public function history(ServerRequest $request, Response $response)
+    {
+        $statusId = (int) $_GET['status_id'] ?? 0;
+        $orderByDirection = $_GET['orderBy'] ?? 'desc';
+
+        $view = Twig::fromRequest($request);
+
+        if ($statusId == 0) {
+            $messagesHistory = $this->repo->getAll($orderByDirection);
+        } else {
+            $messagesHistory = $this->repo->filterByStatus($statusId, $orderByDirection);
+        }
+
+        return $view->render($response, 'messages/history.twig', [
+            'messagesHistory' => $messagesHistory,
+            'statuses' => $this->statuses,
         ]);
     }
 
