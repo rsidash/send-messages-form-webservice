@@ -14,16 +14,12 @@
                             {% endfor %}
                         </select>
 
-                        <input type="submit" value="Отфильтровать">
-                    </div>
-                    <br>
-                    <div>
                         <select name="orderBy">
                             <option value="desc">По убыванию даты</option>
                             <option value="asc">По возрастанию даты</option>
                         </select>
 
-                        <input type="submit" value="Сортировать">
+                        <input type="submit" value="Искать">
                     </div>
                 </div>
             </form>
@@ -49,9 +45,9 @@
     <br>
     <div>
         <form action="/messages/history" method="post">
-                <div>
-                    <input type="submit" value="Отправить неотправленные">
-                </div>
+            <div>
+                <input type="submit" value="Отправить неотправленные">
+            </div>
         </form>
     </div>
 {% endblock %}
