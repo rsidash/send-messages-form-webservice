@@ -6,6 +6,7 @@ use App\Model\Repository\MessageRepository;
 use App\Model\Validators\MessageValidator;
 use App\services\GuzzleClient;
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Slim\Http\ServerRequest;
 use Slim\Http\Response;
 use Slim\Views\Twig;
@@ -57,7 +58,7 @@ class MessagesController
                 } else {
                     $data = ['text' => $message, 'status_id' => $statuses['send']];
                 }
-            } catch (Exception $e) {
+            } catch (Exception | GuzzleException $e) {
                 $this->sendError = $e->getMessage();
                 $data = ['text' => $message, 'status_id' => $statuses['notSend']];
             }
