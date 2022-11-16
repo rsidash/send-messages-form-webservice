@@ -22,7 +22,7 @@ class MessagesController
     private MessageValidator $validator;
     private GuzzleClient $guzzleClient;
     private MessageRepository $repo;
-    private string $sendError;
+    private string $sendError = '';
     private StatusRepository $statusRepo;
     private array $statuses;
 
