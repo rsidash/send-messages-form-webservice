@@ -62,15 +62,15 @@
                     <div>
                         <div class="d-flex justify-content-start">
                             <select class="form-select w-auto me-2" name="status_id">
-                                <option value="0">Все статусы</option>
+                                <option {% if queryParams.statusId == 0 %} selected {% endif %} value="0">Все статусы</option>
                                 {% for status in statuses %}
-                                    <option value={{ status.id }}>{{ status.title }}</option>
+                                    <option {% if queryParams.statusId == status.id %} selected {% endif %} value={{ status.id }}>{{ status.title }}</option>
                                 {% endfor %}
                             </select>
 
                             <select class="form-select w-auto me-2" name="orderBy">
-                                <option value="desc">По убыванию даты</option>
-                                <option value="asc">По возрастанию даты</option>
+                                <option {% if queryParams.orderByDirection == 'desc' %} selected {% endif %} value="desc">По убыванию даты</option>
+                                <option {% if queryParams.orderByDirection == 'asc' %} selected {% endif %} value="asc">По возрастанию даты</option>
                             </select>
 
                             <input class="btn btn-success" type="submit" value="Искать">

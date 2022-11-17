@@ -56,6 +56,10 @@ class MessagesController
         return $view->render($response, 'messages/history.twig', [
             'messagesHistory' => $messagesHistory,
             'statuses' => $this->statuses,
+            'queryParams' => [
+                'statusId' => $statusId,
+                'orderByDirection' => $orderByDirection,
+            ],
         ]);
     }
 
