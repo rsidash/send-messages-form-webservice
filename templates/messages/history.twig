@@ -10,7 +10,7 @@
         <div class="me-auto">
             <form action="/messages/history" method="post">
                 <div>
-                    <input class="btn btn-primary" type="submit" value="Отправить неотправленные">
+                    <input class="btn btn-primary me-2" type="submit" value="Отправить неотправленные">
                 </div>
             </form>
         </div>
@@ -19,14 +19,14 @@
                 <form action="/messages/history" method="get">
                     <div>
                         <div class="d-flex justify-content-start">
-                            <select class="form-select me-2" name="status_id">
+                            <select class="form-select w-auto me-2" name="status_id">
                                 <option value="0">Все статусы</option>
                                 {% for status in statuses %}
                                     <option value={{ status.id }}>{{ status.title }}</option>
                                 {% endfor %}
                             </select>
 
-                            <select class="form-select me-2" name="orderBy">
+                            <select class="form-select w-auto me-2" name="orderBy">
                                 <option value="desc">По убыванию даты</option>
                                 <option value="asc">По возрастанию даты</option>
                             </select>
