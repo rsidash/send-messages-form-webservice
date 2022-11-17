@@ -6,24 +6,19 @@ use App\Model\Repository\MessageRepository;
 use App\Model\Repository\StatusRepository;
 use App\Model\Validators\MessageValidator;
 use App\services\GuzzleClient;
-use Exception;
-use GuzzleHttp\Exception\GuzzleException;
+use App\services\TGNotifier;
 use Slim\Http\ServerRequest;
 use Slim\Http\Response;
 use Slim\Views\Twig;
 
 class MessagesController
 {
-    private const SEND_STATUSES = [
-            'send' => 1,
-            'notSend' => 2,
-        ];
-
     private MessageValidator $validator;
     private GuzzleClient $guzzleClient;
     private MessageRepository $repo;
     private string $sendError = '';
     private StatusRepository $statusRepo;
+    private TGNotifier $notifier;
     private array $statuses;
 
     public function __construct()
@@ -33,6 +28,7 @@ class MessagesController
         $this->guzzleClient = new GuzzleClient();
         $this->statusRepo = new StatusRepository();
         $this->statuses = $this->statusRepo->getAll();
+        $this->notifier = new TGNotifier();
     }
 
     public function index(ServerRequest $request, Response $response)
@@ -46,7 +42,7 @@ class MessagesController
 
     public function history(ServerRequest $request, Response $response)
     {
-        $statusId = (int) $_GET['status_id'] ?? 0;
+        $statusId = (int)$_GET['status_id'] ?? 0;
         $orderByDirection = $_GET['orderBy'] ?? 'desc';
 
         $view = Twig::fromRequest($request);
@@ -72,23 +68,11 @@ class MessagesController
         $view = Twig::fromRequest($request);
 
         if (!$validationErrors) {
-            try {
-                $guzzleResponse = $this->guzzleClient->send($_ENV['BOT_API_SEND_ROUTE'], $message);
+            $notification = $this->notifier->notify(['text' => $message], $message);
 
-                $contents = $guzzleResponse->getBody()->getContents();
+            $this->sendError = $notification['error'];
 
-                if (str_contains($contents, 'error')) {
-                    $this->sendError = $contents;
-                    $data = ['text' => $message, 'status_id' => self::SEND_STATUSES['notSend']];
-                } else {
-                    $data = ['text' => $message, 'status_id' => self::SEND_STATUSES['send']];
-                }
-            } catch (Exception | GuzzleException $e) {
-                $this->sendError = $e->getMessage();
-                $data = ['text' => $message, 'status_id' => self::SEND_STATUSES['notSend']];
-            }
-
-            $this->repo->create($data);
+            $this->repo->create($notification['data']);
         }
 
         return $view->render($response, 'messages/index.twig', [
@@ -103,20 +87,9 @@ class MessagesController
         $allNotSendMessages = $this->repo->getNotSend();
 
         foreach ($allNotSendMessages as $message) {
-            try {
-                $response = $this->guzzleClient->send($_ENV['BOT_API_SEND_ROUTE'], $message->getText());
-                $jsonDecoded = json_decode($response, true);
+            $notification = $this->notifier->notify(['id' => $message->getId()], $message->getText());
 
-                if (array_key_exists('error', $jsonDecoded)) {
-                    $data = ['id' => $message->getId(), 'status_id' => self::SEND_STATUSES['notSend']];
-                } else {
-                    $data = ['id' => $message->getId(), 'status_id' => self::SEND_STATUSES['send']];
-                }
-            } catch (Exception | GuzzleException $e) {
-                $data = ['id' => $message->getId(), 'status_id' => self::SEND_STATUSES['notSend']];
-            }
-
-            $this->repo->update($data);
+            $this->repo->update($notification['data']);
         }
 
         return $response->withRedirect('/messages/history');
