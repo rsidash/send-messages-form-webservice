@@ -19,14 +19,14 @@
                 <form action="/messages/history" method="get">
                     <div>
                         <div class="d-flex justify-content-start">
-                            <select class="form-select" name="status_id">
+                            <select class="form-select me-2" name="status_id">
                                 <option value="0">Все статусы</option>
                                 {% for status in statuses %}
                                     <option value={{ status.id }}>{{ status.title }}</option>
                                 {% endfor %}
                             </select>
 
-                            <select class="form-select" name="orderBy">
+                            <select class="form-select me-2" name="orderBy">
                                 <option value="desc">По убыванию даты</option>
                                 <option value="asc">По возрастанию даты</option>
                             </select>

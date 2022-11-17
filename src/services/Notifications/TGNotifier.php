@@ -1,7 +1,8 @@
 <?php
 
-namespace App\services;
+namespace App\services\Notifications;
 
+use App\services\GuzzleClient;
 use GuzzleHttp\Exception\GuzzleException;
 use Exception;
 

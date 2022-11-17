@@ -6,7 +6,7 @@ use App\Model\Repository\MessageRepository;
 use App\Model\Repository\StatusRepository;
 use App\Model\Validators\MessageValidator;
 use App\services\GuzzleClient;
-use App\services\TGNotifier;
+use App\services\Notifications\TGNotifier;
 use Slim\Http\ServerRequest;
 use Slim\Http\Response;
 use Slim\Views\Twig;

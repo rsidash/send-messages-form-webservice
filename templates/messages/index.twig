@@ -7,7 +7,7 @@
         <p><a href="/messages/history">История сообщений</a></p>
         <form action="/messages" method="post">
             {% if validationErrors is not empty %}
-                <div style="color: red">При отправке произошла ошибка
+                <div class="alert alert-danger" role="alert">При отправке произошла ошибка
                     <ul>
                         {% for validationError in validationErrors %}
                             <li>
@@ -15,6 +15,18 @@
                             </li>
                         {% endfor %}
                     </ul>
+                </div>
+            {% endif %}
+            {% if sendError is empty and validationErrors is empty and not isFirstLaunch %}
+                <div class="alert alert-success" role="alert">
+                    <p>Сообщение успешно отправлено</p>
+                    <p><label>Отправленное сообщение:</label></p>
+                    <p class="fst-italic">{{ message }}</p>
+                </div>
+            {% elseif sendError and validationErrors is empty %}
+                <div class="alert alert-danger" role="alert">
+                    <p><label>При отправке произошла следующая ошибка:</label></p>
+                    <p class="fst-italic">{{ sendError }}</p>
                 </div>
             {% endif %}
             <div>
@@ -25,17 +37,5 @@
                 <input class="btn btn-primary" type="submit" value="Отправить">
             </div>
         </form>
-        {% if sendError is empty and validationErrors is empty and not isFirstLaunch %}
-            <div>
-                <p style="color: green">Сообщение успешно отправлено</p>
-                <p><label>Отправленное сообщение:</label></p>
-                <p>{{ message }}</p>
-            </div>
-        {% elseif sendError and validationErrors is empty %}
-            <div>
-                <p><label style="color: red">При отправке произошла следующая ошибка:</label></p>
-                <p>{{ sendError }}</p>
-            </div>
-        {% endif %}
     </div>
 {% endblock %}
