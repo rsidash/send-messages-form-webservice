@@ -3,34 +3,44 @@
 {% block body %}
     <h1>История сообщений</h1>
     <div>
-        <a href="/messages">Отправка сообщений</a>
+        <a class="btn btn-secondary" href="/messages">Отправка сообщений</a>
     </div>
     <br>
-    <div>
-        <div>
-            <form action="/messages/history" method="get">
+    <div class="d-flex flex-row">
+        <div class="me-auto">
+            <form action="/messages/history" method="post">
                 <div>
-                    <div>
-                        <select name="status_id">
-                            <option value="0">Все статусы</option>
-                            {% for status in statuses %}
-                                <option value={{ status.id }}>{{ status.title }}</option>
-                            {% endfor %}
-                        </select>
-
-                        <select name="orderBy">
-                            <option value="desc">По убыванию даты</option>
-                            <option value="asc">По возрастанию даты</option>
-                        </select>
-
-                        <input type="submit" value="Искать">
-                    </div>
+                    <input class="btn btn-primary" type="submit" value="Отправить неотправленные">
                 </div>
             </form>
         </div>
-        <br>
-        <div>
-            <table border="1">
+        <div class="">
+            <div class="input-group input-group-sm mb-3">
+                <form action="/messages/history" method="get">
+                    <div>
+                        <div class="d-flex justify-content-start">
+                            <select class="form-select" name="status_id">
+                                <option value="0">Все статусы</option>
+                                {% for status in statuses %}
+                                    <option value={{ status.id }}>{{ status.title }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <select class="form-select" name="orderBy">
+                                <option value="desc">По убыванию даты</option>
+                                <option value="asc">По возрастанию даты</option>
+                            </select>
+
+                            <input class="btn btn-success" type="submit" value="Искать">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="table-responsive">
+            <table class="table table-hover">
                 <tr>
                     <th>Текст сообщения</th>
                     <th>Статус</th>
@@ -47,13 +57,5 @@
                 {% endfor %}
             </table>
         </div>
-    </div>
-    <br>
-    <div>
-        <form action="/messages/history" method="post">
-            <div>
-                <input type="submit" value="Отправить неотправленные">
-            </div>
-        </form>
     </div>
 {% endblock %}
