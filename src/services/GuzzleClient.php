@@ -4,7 +4,6 @@ namespace App\services;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Psr7\Response;
 
 class GuzzleClient
 {
@@ -22,6 +21,8 @@ class GuzzleClient
             'timeout' => $_ENV['BOT_API_REQUEST_TIMEOUT'],
         ]);
 
-        return $client->request('POST', $uri, ['json' => ['message' => $message]]);
+        $promise = $client->postAsync($uri, ['json' => ['message' => $message]]);
+
+        return $promise->wait();
     }
 }
