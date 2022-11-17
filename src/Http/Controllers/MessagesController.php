@@ -73,11 +73,12 @@ class MessagesController
 
         if (!$validationErrors) {
             try {
-                $response = $this->guzzleClient->send($_ENV['BOT_API_SEND_ROUTE'], $message);
-                $jsonDecoded = json_decode($response, true);
+                $guzzleResponse = $this->guzzleClient->send($_ENV['BOT_API_SEND_ROUTE'], $message);
 
-                if (array_key_exists('error', $jsonDecoded)) {
-                    $this->sendError = $jsonDecoded['error'];
+                $contents = $guzzleResponse->getBody()->getContents();
+
+                if (str_contains($contents, 'error')) {
+                    $this->sendError = $contents;
                     $data = ['text' => $message, 'status_id' => self::SEND_STATUSES['notSend']];
                 } else {
                     $data = ['text' => $message, 'status_id' => self::SEND_STATUSES['send']];
