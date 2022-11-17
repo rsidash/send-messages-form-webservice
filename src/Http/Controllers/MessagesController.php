@@ -72,7 +72,9 @@ class MessagesController
 
             $this->sendError = $notification['error'];
 
-            $this->repo->create($notification['data']);
+            $data = array_merge($notification['data'], ['reason' => $notification['error']]);
+
+            $this->repo->create($data);
         }
 
         return $view->render($response, 'messages/index.twig', [
@@ -89,7 +91,9 @@ class MessagesController
         foreach ($allNotSendMessages as $message) {
             $notification = $this->notifier->notify(['id' => $message->getId()], $message->getText());
 
-            $this->repo->update($notification['data']);
+            $data = array_merge($notification['data'], ['reason' => $notification['error']]);
+
+            $this->repo->update($data);
         }
 
         return $response->withRedirect('/messages/history');

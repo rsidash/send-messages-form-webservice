@@ -74,14 +74,17 @@ class MessageRepository
     public function create(array $data): Message
     {
         $sql = "INSERT INTO {$this->table} (text, 
-                                    status_id) 
+                                    status_id,
+                                    reason) 
                 VALUES (:text, 
-                        :status_id)";
+                        :status_id,
+                        :reason)";
 
         $stmt = $this->connection->prepare($sql);
 
         $stmt->bindValue("text", $data['text']);
         $stmt->bindValue("status_id", $data['status_id']);
+        $stmt->bindValue("reason", $data['reason']);
 
         $stmt->execute();
 
@@ -92,13 +95,15 @@ class MessageRepository
     {
         $sql = "UPDATE {$this->table} 
                 SET status_id = :status_id,
-                    updated_at = SYSDATE()
+                    updated_at = SYSDATE(),
+                    reason = :reason
                 WHERE id = :id";
 
         $stmt = $this->connection->prepare($sql);
 
         $stmt->bindValue("status_id", $data['status_id']);
         $stmt->bindValue("id", $data['id']);
+        $stmt->bindValue("reason", $data['reason']);
 
         $stmt->execute();
 
