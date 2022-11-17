@@ -30,10 +30,10 @@ class TGNotifier
 
             if (str_contains($contents, 'error')) {
                 $error = $contents;
-//                $data = ['text' => $message, 'status_id' => self::SEND_STATUSES['notSend']];
+
                 $data = array_merge($data, ['status_id' => self::SEND_STATUSES['notSend']]);
             } else {
-                $data = array_merge($data, ['status_id' => self::SEND_STATUSES['notSend']]);
+                $data = array_merge($data, ['status_id' => self::SEND_STATUSES['send']]);
             }
         } catch (Exception | GuzzleException $e) {
             $error = $e->getMessage();

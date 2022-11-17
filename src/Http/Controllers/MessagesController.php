@@ -82,7 +82,7 @@ class MessagesController
         ]);
     }
 
-    public function resend(ServerRequest $request, Response $response, array $args)
+    public function resend(ServerRequest $request, Response $response)
     {
         $allNotSendMessages = $this->repo->getNotSend();
 
