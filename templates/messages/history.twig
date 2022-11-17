@@ -8,37 +8,39 @@
         {% endblock %}
     {% endembed %}
 
-    <h1>История сообщений</h1>
-    <br>
-    <div class="d-flex flex-row">
-        <div class="me-auto">
-            <form action="/messages/history" method="post">
-                <div>
-                    <input class="btn btn-primary me-2" type="submit" value="Отправить неотправленные">
-                </div>
-            </form>
-        </div>
-        <div class="">
-            <div class="input-group input-group-sm mb-3">
-                <form action="/messages/history" method="get">
+    <div>
+        <h1>История сообщений</h1>
+        <br>
+        <div class="d-flex flex-column flex-md-row">
+            <div class="me-auto">
+                <form action="/messages/history" method="post">
                     <div>
-                        <div class="d-flex justify-content-start">
-                            <select class="form-select w-auto me-2" name="status_id">
-                                <option {% if queryParams.statusId == 0 %} selected {% endif %} value="0">Все статусы</option>
-                                {% for status in statuses %}
-                                    <option {% if queryParams.statusId == status.id %} selected {% endif %} value={{ status.id }}>{{ status.title }}</option>
-                                {% endfor %}
-                            </select>
-
-                            <select class="form-select w-auto me-2" name="orderBy">
-                                <option {% if queryParams.orderByDirection == 'desc' %} selected {% endif %} value="desc">По убыванию даты</option>
-                                <option {% if queryParams.orderByDirection == 'asc' %} selected {% endif %} value="asc">По возрастанию даты</option>
-                            </select>
-
-                            <input class="btn btn-success" type="submit" value="Искать">
-                        </div>
+                        <input class="btn btn-primary me-2" type="submit" value="Отправить неотправленные">
                     </div>
                 </form>
+            </div>
+            <div class="">
+                <div class="input-group input-group-sm mb-3">
+                    <form action="/messages/history" method="get">
+                        <div>
+                            <div class="d-flex flex-column flex-md-row justify-content-start">
+                                <select class="form-select w-auto me-2" name="status_id">
+                                    <option {% if queryParams.statusId == 0 %} selected {% endif %} value="0">Все статусы</option>
+                                    {% for status in statuses %}
+                                        <option {% if queryParams.statusId == status.id %} selected {% endif %} value={{ status.id }}>{{ status.title }}</option>
+                                    {% endfor %}
+                                </select>
+
+                                <select class="form-select w-auto me-2" name="orderBy">
+                                    <option {% if queryParams.orderByDirection == 'desc' %} selected {% endif %} value="desc">По убыванию даты</option>
+                                    <option {% if queryParams.orderByDirection == 'asc' %} selected {% endif %} value="asc">По возрастанию даты</option>
+                                </select>
+
+                                <input class="btn btn-success" type="submit" value="Искать">
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
