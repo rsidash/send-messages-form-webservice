@@ -4,7 +4,7 @@
     <div class="position-absolute top-0 start-0 m-2">
         <h1>Сервис отправки сообщений</h1>
 
-        <a href="/messages/history">История сообщений</a>
+        <p><a href="/messages/history">История сообщений</a></p>
         <form action="/messages" method="post">
             {% if validationErrors is not empty %}
                 <div style="color: red">При отправке произошла ошибка
@@ -18,10 +18,9 @@
                 </div>
             {% endif %}
             <div>
-                <p><label>Введите сообщение:</label></p>
+                <label>Введите сообщение:</label>
                 <textarea class="form-control" rows="4" cols="50" placeholder="Ваше сообщение..."
                           name="message">{% if validationErrors is not empty %}{{ message }}{% endif %}</textarea>
-                <br>
                 <br>
                 <input class="btn btn-primary" type="submit" value="Отправить">
             </div>
