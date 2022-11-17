@@ -52,7 +52,7 @@ class Message extends AbstractModel
     public function getLastSendDate(): string
     {
         $createdAt = strtotime($this->getCreatedAt());
-        $updatedAt = strtotime($this->getCreatedAt());
+        $updatedAt = strtotime($this->getUpdatedAt());
 
         if ($updatedAt > $createdAt) {
             return $this->getUpdatedAt();
