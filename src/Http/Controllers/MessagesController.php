@@ -71,7 +71,7 @@ class MessagesController
 
         $view = Twig::fromRequest($request);
 
-        if (!$validationErrors) {
+        if (empty($validationErrors)) {
             $notification = $this->notifier->notify(['text' => $message], $message);
 
             $this->sendError = $notification['error'];
