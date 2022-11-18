@@ -20,35 +20,72 @@ final class Version20221118082844 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $table = $schema->getTable('messages');
+        $this->addSql('DELETE FROM messages');
 
-        $table->dropIndex('IDX_DB021E966BF700BD');
+        $schema->dropTable('messages');
 
-        $table->removeForeignKey('FK_DB021E966BF700BD');
+        $table = $schema->createTable('messages');
 
-        $table->dropColumn('status_id');
+        $table->addColumn('id', Types::INTEGER)->setAutoincrement(true);
+
+        $table->addColumn('text', Types::TEXT);
 
         $table->addColumn('is_send', Types::BOOLEAN);
 
-        $schema->getTable('messages')->addIndex(['is_send']);
+        $table->addColumn('reason', Types::TEXT, [
+            'notnull' => false,
+        ]);
 
+        $table->addColumn('created_at', Types::DATETIME_MUTABLE, [
+            'default' => 'CURRENT_TIMESTAMP',
+        ]);
+
+        $table->addColumn('updated_at', Types::DATETIME_MUTABLE, [
+            'default' => 'CURRENT_TIMESTAMP',
+        ]);
+
+        $table->addColumn('deleted_at', Types::DATETIME_MUTABLE, [
+            'notnull' => false
+        ]);
+
+        $table->setPrimaryKey(array('id'));
+
+        $schema->getTable('messages')->addIndex(['created_at']);
         $schema->getTable('messages')->addIndex(['updated_at']);
+        $schema->getTable('messages')->addIndex(['is_send']);
     }
 
     public function down(Schema $schema): void
     {
-        $table = $schema->getTable('messages');
+        $this->addSql('DELETE FROM messages');
 
-        $table->dropIndex('IDX_DB021E9643625D9F');
+        $schema->dropTable('messages');
 
-        $table->dropIndex('IDX_DB021E96328014EC');
+        $table = $schema->createTable('messages');
 
-        $table->dropColumn('is_send');
+        $table->addColumn('id', Types::INTEGER)->setAutoincrement(true);
+
+        $table->addColumn('text', Types::TEXT);
+
+        $table->addColumn('created_at', Types::DATETIME_MUTABLE, [
+            'default' => 'CURRENT_TIMESTAMP',
+        ]);
+
+        $table->addColumn('updated_at', Types::DATETIME_MUTABLE, [
+            'default' => 'CURRENT_TIMESTAMP',
+        ]);
+
+        $table->addColumn('deleted_at', Types::DATETIME_MUTABLE, [
+            'notnull' => false
+        ]);
 
         $table->addColumn('status_id', Types::INTEGER);
 
         $table->addForeignKeyConstraint('statuses', ['status_id'], ['id']);
 
+        $table->setPrimaryKey(array('id'));
+
+        $schema->getTable('messages')->addIndex(['created_at']);
         $schema->getTable('messages')->addIndex(['status_id']);
     }
 }
