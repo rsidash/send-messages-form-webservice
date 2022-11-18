@@ -10,7 +10,7 @@ class IndexController
 {
     public function home(ServerRequest $request, Response $response)
     {
-        $username = $_GET['name'] ?? 'гость';
+        $username = $request->getParam('name') ?? 'гость';
 
         $view = Twig::fromRequest($request);
 
