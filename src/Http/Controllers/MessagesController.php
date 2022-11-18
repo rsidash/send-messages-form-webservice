@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Model\Repository\MessageRepository;
-use App\Model\Repository\StatusRepository;
 use App\Model\Validators\MessageValidator;
 use App\services\GuzzleClient;
 use App\services\Notifications\TGNotifier;
+use App\services\SendStatus;
 use Slim\Http\ServerRequest;
 use Slim\Http\Response;
 use Slim\Views\Twig;
@@ -16,18 +16,13 @@ class MessagesController
     private MessageValidator $validator;
     private GuzzleClient $guzzleClient;
     private MessageRepository $repo;
-    private string $sendError = '';
-    private StatusRepository $statusRepo;
     private TGNotifier $notifier;
-    private array $statuses;
 
     public function __construct()
     {
         $this->repo = new MessageRepository();
         $this->validator = new MessageValidator();
         $this->guzzleClient = new GuzzleClient();
-        $this->statusRepo = new StatusRepository();
-        $this->statuses = $this->statusRepo->getAll();
         $this->notifier = new TGNotifier();
     }
 
@@ -42,22 +37,28 @@ class MessagesController
 
     public function history(ServerRequest $request, Response $response)
     {
-        $statusId = (int)$_GET['status_id'] ?? 0;
-        $orderByDirection = $_GET['orderBy'] ?? 'desc';
+        $status = $request->getParam('status') ?? 'all';
+        $orderByDirection = $request->getParam('orderBy') ?? 'desc';
+
+        $statuses = SendStatus::getSendStatus();
+        $isSend = $statuses['notSend']['statusCode'];
+
+        if ($status == 'send') {
+            $isSend = $statuses['send']['statusCode'];
+        }
+
+        $messagesHistory = $this->repo->filterByStatus($isSend, $orderByDirection);
+
+        if ($status == 'all') {
+            $messagesHistory = $this->repo->getAll($orderByDirection);
+        }
 
         $view = Twig::fromRequest($request);
 
-        if ($statusId == 0) {
-            $messagesHistory = $this->repo->getAll($orderByDirection);
-        } else {
-            $messagesHistory = $this->repo->filterByStatus($statusId, $orderByDirection);
-        }
-
         return $view->render($response, 'messages/history.twig', [
             'messagesHistory' => $messagesHistory,
-            'statuses' => $this->statuses,
             'queryParams' => [
-                'statusId' => $statusId,
+                'status' => $status,
                 'orderByDirection' => $orderByDirection,
             ],
         ]);
@@ -65,6 +66,8 @@ class MessagesController
 
     public function send(ServerRequest $request, Response $response)
     {
+        $sendError = '';
+
         $message = $request->getParsedBodyParam('message', []);
 
         $validationErrors = $this->validator->validate(['message' => $message]);
@@ -74,7 +77,7 @@ class MessagesController
         if (empty($validationErrors)) {
             $notification = $this->notifier->notify(['text' => $message], $message);
 
-            $this->sendError = $notification['error'];
+            $sendError = $notification['error'];
 
             $data = array_merge($notification['data'], ['reason' => $notification['error']]);
 
@@ -84,7 +87,7 @@ class MessagesController
         return $view->render($response, 'messages/index.twig', [
             'message' => $message,
             'validationErrors' => $validationErrors,
-            'sendError' => $this->sendError,
+            'sendError' => $sendError,
         ]);
     }
 

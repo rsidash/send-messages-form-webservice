@@ -3,16 +3,12 @@
 namespace App\services\Notifications;
 
 use App\services\GuzzleClient;
+use App\services\SendStatus;
 use GuzzleHttp\Exception\GuzzleException;
 use Exception;
 
 class TGNotifier
 {
-    private const SEND_STATUSES = [
-        'send' => 1,
-        'notSend' => 2,
-    ];
-
     private GuzzleClient $guzzleClient;
 
     public function __construct()
@@ -23,6 +19,7 @@ class TGNotifier
     public function notify(array $data, string $message)
     {
         $error = '';
+        $statuses = SendStatus::getSendStatus();
 
         try {
             $guzzleResponse = $this->guzzleClient->send($_ENV['BOT_API_SEND_ROUTE'], $message);
@@ -32,13 +29,13 @@ class TGNotifier
             if (str_contains($contents, 'error')) {
                 $error = $contents;
 
-                $data = array_merge($data, ['status_id' => self::SEND_STATUSES['notSend']]);
+                $data = array_merge($data, ['is_send' => $statuses['notSend']['statusCode']]);
             } else {
-                $data = array_merge($data, ['status_id' => self::SEND_STATUSES['send']]);
+                $data = array_merge($data, ['is_send' => $statuses['send']['statusCode']]);
             }
         } catch (Exception | GuzzleException $e) {
             $error = $e->getMessage();
-            $data = array_merge($data, ['status_id' => self::SEND_STATUSES['notSend']]);
+            $data = array_merge($data, ['is_send' => $statuses['notSend']['statusCode']]);
         }
 
         return [

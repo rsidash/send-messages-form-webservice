@@ -2,14 +2,13 @@
 
 namespace App\Model\Entity;
 
-use App\Model\Repository\StatusRepository;
-use Exception;
+use App\services\SendStatus;
 
 class Message extends AbstractModel
 {
     private ?int $id;
     private ?string $text;
-    private ?int $statusId;
+    private ?bool $isSend;
     private ?string $createdAt;
     private ?string $updatedAt;
     private ?string $reason;
@@ -18,7 +17,7 @@ class Message extends AbstractModel
     {
         $this->id = $data['id'] ?? null;
         $this->text = $data['text'] ?? null;
-        $this->statusId = $data['status_id'] ?? null;
+        $this->isSend = $data['is_send'] ?? 0;
         $this->createdAt = $data['created_at'] ?? null;
         $this->updatedAt = $data['updated_at'] ?? null;
         $this->reason = $data['reason'] ?? null;
@@ -34,9 +33,9 @@ class Message extends AbstractModel
         return $this->text ?? '';
     }
 
-    public function getStatusId(): ?int
+    public function getIsSend(): bool
     {
-        return $this->statusId;
+        return $this->isSend;
     }
 
     public function getCreatedAt(): string
@@ -66,16 +65,16 @@ class Message extends AbstractModel
         return $this->reason;
     }
 
-    public function getStatus(): ?Status
+    public function getStatus(): string
     {
-        $statusId = $this->getStatusId();
-        $statusRepo = new StatusRepository();
+        $isSend = $this->getIsSend();
+        $statuses = SendStatus::getSendStatus();
 
-        try {
-            return $statusRepo->getById($statusId);
-        } catch (Exception $e) {
-            return null;
+        if ($isSend) {
+            return $statuses['send']['title'];
         }
+
+        return $statuses['notSend']['title'];
     }
 
     public function toArray(): array
@@ -84,7 +83,7 @@ class Message extends AbstractModel
             'id' => $this->getId(),
             'text' => $this->getText(),
             'date' => $this->getLastSendDate(),
-            'status' => $this->getStatus()->getTitle(),
+            'status' => $this->getStatus(),
             'reason' => $this->getReason(),
         ];
     }
