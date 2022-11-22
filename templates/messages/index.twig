@@ -37,7 +37,7 @@
             <div>
                 <label>Введите сообщение:</label>
                 <textarea class="form-control" rows="4" cols="50" placeholder="Ваше сообщение..."
-                          name="message">{% if validationErrors is not empty %}{{ message }}{% endif %}</textarea>
+                          name="message">{% if validationErrors or sendError is not empty %}{{ message }}{% endif %}</textarea>
                 <br>
                 <input class="btn btn-primary" type="submit" value="Отправить">
             </div>

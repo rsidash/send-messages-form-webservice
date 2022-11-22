@@ -15,7 +15,7 @@
             <div class="me-auto">
                 <form action="/messages/history" method="post">
                     <div>
-                        <input class="btn btn-primary me-2" type="submit" value="Отправить неотправленные">
+                        <input class="btn btn-primary me-2" type="submit" value="Отправить все неотправленные">
                     </div>
                 </form>
             </div>
@@ -25,14 +25,24 @@
                         <div>
                             <div class="d-flex flex-column flex-md-row justify-content-start">
                                 <select class="form-select w-auto me-2" name="status">
-                                    <option {% if queryParams.status == 'all' %} selected {% endif %} value="all">Все статусы</option>
-                                    <option {% if queryParams.status == 'send' %} selected {% endif %} value="send">Отправлено</option>
-                                    <option {% if queryParams.status == 'notSend' %} selected {% endif %} value="notSend">Не отправлено</option>
+                                    <option {% if queryParams.status == 'all' %} selected {% endif %} value="all">Все
+                                        статусы
+                                    </option>
+                                    <option {% if queryParams.status == 'send' %} selected {% endif %} value="send">
+                                        {{ statuses.send.title }}
+                                    </option>
+                                    <option {% if queryParams.status == 'notSend' %} selected {% endif %}
+                                            value="notSend">{{ statuses.notSend.title }}
+                                    </option>
                                 </select>
 
                                 <select class="form-select w-auto me-2" name="orderBy">
-                                    <option {% if queryParams.orderByDirection == 'desc' %} selected {% endif %} value="desc">По убыванию даты</option>
-                                    <option {% if queryParams.orderByDirection == 'asc' %} selected {% endif %} value="asc">По возрастанию даты</option>
+                                    <option {% if queryParams.orderByDirection == 'desc' %} selected {% endif %}
+                                            value="desc">По убыванию даты
+                                    </option>
+                                    <option {% if queryParams.orderByDirection == 'asc' %} selected {% endif %}
+                                            value="asc">По возрастанию даты
+                                    </option>
                                 </select>
 
                                 <input class="btn btn-success" type="submit" value="Искать">
@@ -43,24 +53,35 @@
             </div>
         </div>
     </div>
-    <div>
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <tr>
-                    <th>Текст сообщения</th>
-                    <th>Дата последней отправки</th>
-                    <th>Статус</th>
-                    <th>Причина</th>
-                </tr>
-                {% for message in messagesHistory %}
-                    <tr>
-                        <td>{{ message.getText() }}</td>
-                        <td>{{ message.getLastSendDate() }}</td>
-                        <td>{{ message.getStatus() }}</td>
-                        <td>{{ message.getReason() }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
+    <form action="/messages/history" method="post">
+        <div class="mb-2">
+            <input class="btn btn-primary me-2" type="submit" value="Отправить выбранные неотправленные">
         </div>
-    </div>
+        <div>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <tr>
+                        <th>Выбрать</th>
+                        <th>Текст сообщения</th>
+                        <th>Дата последней отправки</th>
+                        <th>Статус</th>
+                        <th>Причина</th>
+                    </tr>
+                    {% for message in messagesHistory %}
+                        <tr>
+                            <td>
+                                <input class="form-check-input" type="checkbox" id="checkbox{{ message.getId() }}"
+                                       value={{ message.getId() }} name="selectedIds[]"
+                                        {% if message.getStatus() ==  statuses.send.title %} disabled {% endif %}>
+                            </td>
+                            <td>{{ message.getText() }}</td>
+                            <td>{{ message.getLastSendDate() }}</td>
+                            <td>{{ message.getStatus() }}</td>
+                            <td>{{ message.getReason() }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </form>
 {% endblock %}

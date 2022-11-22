@@ -57,6 +57,7 @@ class MessagesController
 
         return $view->render($response, 'messages/history.twig', [
             'messagesHistory' => $messagesHistory,
+            'statuses' => $statuses,
             'queryParams' => [
                 'status' => $status,
                 'orderByDirection' => $orderByDirection,
@@ -93,9 +94,15 @@ class MessagesController
 
     public function resend(ServerRequest $request, Response $response)
     {
-        $allNotSendMessages = $this->repo->getNotSend();
+        $selectedIds = $request->getParam('selectedIds') ?? [];
 
-        foreach ($allNotSendMessages as $message) {
+        if (empty($selectedIds)) {
+            $notSendMessages = $this->repo->getNotSend();
+        } else {
+            $notSendMessages = $this->repo->getNotSendByIds($selectedIds);
+        }
+
+        foreach ($notSendMessages as $message) {
             $notification = $this->notifier->notify(['id' => $message->getId()], $message->getText());
 
             $data = array_merge($notification['data'], ['reason' => $notification['error']]);

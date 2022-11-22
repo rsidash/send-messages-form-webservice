@@ -5,6 +5,7 @@ namespace App\Model\Repository;
 use App\Model\Entity\Message;
 use App\services\SendStatus;
 use config\Database;
+use Doctrine\DBAL\Types\Types;
 use PDO;
 
 class MessageRepository
@@ -64,6 +65,37 @@ class MessageRepository
 
         $sql = "SELECT * FROM {$this->table} WHERE deleted_at IS NULL AND is_send = {$statuses['notSend']['statusCode']};";
         $stmt = $this->connection->query($sql);
+
+        $records = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        foreach ($records as $record) {
+            $result[] = new Message(json_decode(json_encode($record),true));
+        }
+
+        return $result;
+    }
+
+    public function getNotSendByIds(array $data)
+    {
+        $result = [];
+        $statuses = SendStatus::getSendStatus();
+
+        $placeholders = array_fill( 0, count($data), '?' );
+        $placeholderString = implode( ',', $placeholders );
+
+        $sql = "SELECT * FROM {$this->table}
+                WHERE deleted_at IS NULL
+                AND is_send = {$statuses['notSend']['statusCode']}
+                AND id in ({$placeholderString})";
+
+        $stmt = $this->connection->prepare($sql);
+
+        $i = 1;
+        foreach( $data AS $id ) {
+            $stmt->bindValue($i++, $id);
+        }
+
+        $stmt->execute();
 
         $records = $stmt->fetchAll(PDO::FETCH_OBJ);
 
