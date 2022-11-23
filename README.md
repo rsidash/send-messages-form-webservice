@@ -64,6 +64,13 @@
 
 Убедитесь, что у Вас установлены php, mysql и composer
 
+Раскомментируйте, если это не сделано, следующие строки в файле php.ini:
+   ```sh
+   extension=fileinfo
+   extension=mysqli
+   extension=pdo_mysql
+   ```
+
 ### Установка
 
 1. Склонируйте репозиторий
