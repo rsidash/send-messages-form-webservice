@@ -13,20 +13,17 @@
         <br>
         <div class="d-flex flex-column flex-md-row gap-1">
             <div class="me-auto">
-                <form action="/messages/history" method="post">
+                <form action="/messages/history/resend_all" method="post">
                     <div>
-                        <input class="btn btn-primary me-2" type="submit" value="Отправить все неотправленные"
-                               formaction="/messages/history/resend_all">
+                        <input class="btn btn-primary me-2" type="submit" value="Отправить все неотправленные">
                     </div>
                 </form>
             </div>
             <div class="me-auto">
-                <form action="/messages/history/delete" method="post">
-                    <div>
-                        <input class="btn btn-danger me-2" type="submit" value="Удалить все неотправленные"
-                               formaction="/messages/history/delete_all">
-                    </div>
-                </form>
+                <div>
+                    <input class="btn btn-danger me-2" type="submit" value="Удалить все неотправленные"
+                           data-bs-toggle="modal" data-bs-target="#deleteAllModal">
+                </div>
             </div>
             <div class="">
                 <div class="input-group input-group-sm mb-3">
@@ -67,8 +64,8 @@
                        formaction="/messages/history/resend_selected">
             </div>
             <div class="">
-                <input class="btn btn-danger me-2" type="submit" form="tableForm" value="Удалить выбранные"
-                       formaction="/messages/history/delete_selected">
+                <input class="btn btn-danger me-2" type="submit" value="Удалить выбранные"
+                       data-bs-toggle="modal" data-bs-target="#deleteSelectedModal">
             </div>
         </div>
     </div>
@@ -100,4 +97,27 @@
             </div>
         </div>
     </form>
+
+    {% embed "deleteModalDialog.twig" %}
+        {% block deleteModalDialogId %}deleteAllModal{% endblock %}
+        {% block deleteModalDialogLabel %}deleteAllModalLabel{% endblock %}
+        {% block deleteModalDialogTitle %}Удаление неотправленных сообщений{% endblock %}
+        {% block deleteModalDialogBody %}Удалить все неотправленные сообщения?{% endblock %}
+        {% block deleteModalDialogButton %}
+            <form action="/messages/history/delete_all" method="post">
+                <input class="btn btn-danger" type="submit" value="Удалить">
+            </form>
+        {% endblock %}
+    {% endembed %}
+
+    {% embed "deleteModalDialog.twig" %}
+        {% block deleteModalDialogId %}deleteSelectedModal{% endblock %}
+        {% block deleteModalDialogLabel %}deleteSelectedModal{% endblock %}
+        {% block deleteModalDialogTitle %}Удаление выбранных неотправленных сообщений{% endblock %}
+        {% block deleteModalDialogBody %}Удалить выбранные неотправленные сообщения?{% endblock %}
+        {% block deleteModalDialogButton %}
+            <input class="btn btn-danger" type="submit" form="tableForm" value="Удалить"
+                   formaction="/messages/history/delete_selected">
+        {% endblock %}
+    {% endembed %}
 {% endblock %}
