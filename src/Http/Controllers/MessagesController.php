@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Model\Entity\Message;
 use App\Model\Repository\MessageRepository;
 use App\Model\Validators\MessageValidator;
-use App\services\GuzzleClient;
 use App\services\Notifications\TGNotifier;
 use App\services\SendStatus;
 use Exception;
@@ -111,9 +110,6 @@ class MessagesController
         ]);
     }
 
-    /**
-     * @throws Exception
-     */
     public function resendAll(ServerRequest $request, Response $response): Response|ResponseInterface
     {
         $notSendMessages = $this->repo->getNotSend();
