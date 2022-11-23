@@ -93,11 +93,11 @@ class MessagesController
         $view = Twig::fromRequest($request);
 
         if (empty($validationErrors)) {
-            $notification = $this->notifier->notify(['text' => $message], $message);
+            $notification = $this->notifier->notify($message);
 
             $sendError = $notification['error'];
 
-            $data = array_merge($notification['data'], ['reason' => $notification['error']]);
+            $data = array_merge($notification['data'], ['text' => $message], ['reason' => $notification['error']]);
 
             $this->repo->create($data);
         }
@@ -120,9 +120,9 @@ class MessagesController
         }
 
         foreach ($notSendMessages as $message) {
-            $notification = $this->notifier->notify(['id' => $message->getId()], $message->getText());
+            $notification = $this->notifier->notify($message->getText());
 
-            $data = array_merge($notification['data'], ['reason' => $notification['error']]);
+            $data = array_merge($notification['data'], ['id' => $message->getId()], ['reason' => $notification['error']]);
 
             $this->repo->update($data);
         }

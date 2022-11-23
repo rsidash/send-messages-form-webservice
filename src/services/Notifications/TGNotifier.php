@@ -16,7 +16,7 @@ class TGNotifier
         $this->guzzleClient = new GuzzleClient();
     }
 
-    public function notify(array $data, string $message): array
+    public function notify(string $message): array
     {
         $error = '';
         $statuses = SendStatus::getSendStatus();
@@ -29,13 +29,13 @@ class TGNotifier
             if (str_contains($contents, 'error')) {
                 $error = $contents;
 
-                $data = array_merge($data, ['is_send' => $statuses['notSend']['statusCode']]);
+                $data = ['is_send' => $statuses['notSend']['statusCode']];
             } else {
-                $data = array_merge($data, ['is_send' => $statuses['send']['statusCode']]);
+                $data = ['is_send' => $statuses['send']['statusCode']];
             }
         } catch (Exception | GuzzleException $e) {
             $error = $e->getMessage();
-            $data = array_merge($data, ['is_send' => $statuses['notSend']['statusCode']]);
+            $data = ['is_send' => $statuses['notSend']['statusCode']];
         }
 
         return [
