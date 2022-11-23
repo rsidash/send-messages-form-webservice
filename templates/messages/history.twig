@@ -19,6 +19,13 @@
                     </div>
                 </form>
             </div>
+            <div class="me-auto">
+                <form action="/messages/history/delete" method="post">
+                    <div>
+                        <input class="btn btn-danger me-2" type="submit" value="Удалить все неотправленные">
+                    </div>
+                </form>
+            </div>
             <div class="">
                 <div class="input-group input-group-sm mb-3">
                     <form action="/messages/history" method="get">
@@ -52,11 +59,17 @@
                 </div>
             </div>
         </div>
+        <div class="d-flex flex-column flex-md-row gap-1">
+            <div class="">
+                <input class="btn btn-primary me-2" type="submit" form="tableForm" value="Отправить выбранные">
+            </div>
+            <div class="">
+                <input class="btn btn-danger me-2" type="submit" form="tableForm" value="Удалить выбранные"
+                       formaction="/messages/history/delete">
+            </div>
+        </div>
     </div>
-    <form action="/messages/history" method="post">
-        <div class="mb-2">
-            <input class="btn btn-primary me-2" type="submit" value="Отправить выбранные неотправленные">
-        </div></form>
+    <form action="/messages/history" method="post" id="tableForm">
         <div>
             <div class="table-responsive">
                 <table class="table table-hover">
@@ -83,5 +96,5 @@
                 </table>
             </div>
         </div>
-
+    </form>
 {% endblock %}

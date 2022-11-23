@@ -12,6 +12,7 @@ class MessageRepository
 {
     private ?PDO $connection;
     private string $table;
+    private array $statuses;
 
     public function __construct()
     {
@@ -19,6 +20,7 @@ class MessageRepository
         $this->connection = $db->getConnection();
 
         $this->table = 'messages';
+        $this->statuses = SendStatus::getSendStatus();
     }
 
     public function getAll(string $orderByDirection): array
@@ -61,9 +63,8 @@ class MessageRepository
     public function getNotSend(): array
     {
         $result = [];
-        $statuses = SendStatus::getSendStatus();
 
-        $sql = "SELECT * FROM {$this->table} WHERE deleted_at IS NULL AND is_send = {$statuses['notSend']['statusCode']};";
+        $sql = "SELECT * FROM {$this->table} WHERE deleted_at IS NULL AND is_send = {$this->statuses['notSend']['statusCode']};";
         $stmt = $this->connection->query($sql);
 
         $records = $stmt->fetchAll(PDO::FETCH_OBJ);
@@ -78,14 +79,13 @@ class MessageRepository
     public function getNotSendByIds(array $data): array
     {
         $result = [];
-        $statuses = SendStatus::getSendStatus();
 
         $placeholders = array_fill( 0, count($data), '?' );
         $placeholderString = implode( ',', $placeholders );
 
         $sql = "SELECT * FROM {$this->table}
                 WHERE deleted_at IS NULL
-                AND is_send = {$statuses['notSend']['statusCode']}
+                AND is_send = {$this->statuses['notSend']['statusCode']}
                 AND id in ({$placeholderString})";
 
         $stmt = $this->connection->prepare($sql);
@@ -143,5 +143,33 @@ class MessageRepository
         $stmt->execute();
 
         return new Message($data);
+    }
+
+    public function deleteNotSend(): bool
+    {
+        $sql = "UPDATE {$this->table}
+                SET deleted_at = SYSDATE()
+                WHERE is_send = {$this->statuses['notSend']['statusCode']}";
+
+        $stmt = $this->connection->prepare($sql);
+
+        $stmt->execute();
+
+        return true;
+    }
+
+    public function deleteById(int $id): bool
+    {
+        $sql = "UPDATE {$this->table}
+                SET deleted_at = SYSDATE()
+                WHERE id = :id";
+
+        $stmt = $this->connection->prepare($sql);
+
+        $stmt->bindValue("id", $id);
+
+        $stmt->execute();
+
+        return true;
     }
 }

@@ -129,4 +129,19 @@ class MessagesController
 
         return $response->withRedirect('/messages/history');
     }
+
+    public function delete(ServerRequest $request, Response $response): Response|ResponseInterface
+    {
+        $selectedIds = $request->getParam('selectedIds') ?? [];
+
+        if (empty($selectedIds)) {
+            $this->repo->deleteNotSend();
+        } else {
+            foreach ($selectedIds as $id) {
+                $this->repo->deleteById($id);
+            }
+        }
+
+        return $response->withRedirect('/messages/history');
+    }
 }

@@ -21,5 +21,6 @@ $app->get('/messages', Controllers\MessagesController::class . ':index');
 $app->post('/messages', Controllers\MessagesController::class . ':send');
 $app->get('/messages/history', Controllers\MessagesController::class . ':history');
 $app->post('/messages/history', Controllers\MessagesController::class . ':resend');
+$app->post('/messages/history/delete', Controllers\MessagesController::class . ':delete');
 
 $app->run();
