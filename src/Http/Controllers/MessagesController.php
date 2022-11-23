@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\Entity\Message;
 use App\Model\Repository\MessageRepository;
 use App\Model\Validators\MessageValidator;
 use App\services\GuzzleClient;
 use App\services\Notifications\TGNotifier;
 use App\services\SendStatus;
+use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\ServerRequest;
 use Slim\Http\Response;
@@ -109,39 +111,67 @@ class MessagesController
         ]);
     }
 
-    public function resend(ServerRequest $request, Response $response): Response|ResponseInterface
+    /**
+     * @throws Exception
+     */
+    public function resendAll(ServerRequest $request, Response $response): Response|ResponseInterface
     {
-        $selectedIds = $request->getParam('selectedIds') ?? [];
-
-        if (empty($selectedIds)) {
-            $notSendMessages = $this->repo->getNotSend();
-        } else {
-            $notSendMessages = $this->repo->getNotSendByIds($selectedIds);
-        }
+        $notSendMessages = $this->repo->getNotSend();
 
         foreach ($notSendMessages as $message) {
-            $notification = $this->notifier->notify($message->getText());
-
-            $data = array_merge($notification['data'], ['id' => $message->getId()], ['reason' => $notification['error']]);
-
-            $this->repo->update($data);
+            $this->makeNotification($message);
         }
 
         return $response->withRedirect('/messages/history');
     }
 
-    public function delete(ServerRequest $request, Response $response): Response|ResponseInterface
+    /**
+     * @throws Exception
+     */
+    public function resendSelected(ServerRequest $request, Response $response): Response|ResponseInterface
     {
+        $notSendMessages = [];
         $selectedIds = $request->getParam('selectedIds') ?? [];
 
-        if (empty($selectedIds)) {
-            $this->repo->deleteNotSend();
-        } else {
-            foreach ($selectedIds as $id) {
-                $this->repo->deleteById($id);
+        foreach ($selectedIds as $id) {
+            try {
+                $notSendMessages[] = $this->repo->getNotSendById($id);
+            } catch (Exception $e) {
+                return $response->withStatus(404)->write($e->getMessage());
             }
         }
 
+        foreach ($notSendMessages as $message) {
+            $this->makeNotification($message);
+        }
+
         return $response->withRedirect('/messages/history');
+    }
+
+    public function deleteAllNotSend(ServerRequest $request, Response $response): Response|ResponseInterface
+    {
+        $this->repo->deleteNotSend();
+
+        return $response->withRedirect('/messages/history');
+    }
+
+    public function deleteSelectedNotSend(ServerRequest $request, Response $response): Response|ResponseInterface
+    {
+        $selectedIds = $request->getParam('selectedIds') ?? [];
+
+        foreach ($selectedIds as $id) {
+            $this->repo->deleteById($id);
+        }
+
+        return $response->withRedirect('/messages/history');
+    }
+
+    private function makeNotification(Message $message): void
+    {
+        $notification = $this->notifier->notify($message->getText());
+
+        $data = array_merge($notification['data'], ['id' => $message->getId()], ['reason' => $notification['error']]);
+
+        $this->repo->update($data);
     }
 }

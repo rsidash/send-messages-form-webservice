@@ -15,14 +15,16 @@
             <div class="me-auto">
                 <form action="/messages/history" method="post">
                     <div>
-                        <input class="btn btn-primary me-2" type="submit" value="Отправить все неотправленные">
+                        <input class="btn btn-primary me-2" type="submit" value="Отправить все неотправленные"
+                               formaction="/messages/history/resend_all">
                     </div>
                 </form>
             </div>
             <div class="me-auto">
                 <form action="/messages/history/delete" method="post">
                     <div>
-                        <input class="btn btn-danger me-2" type="submit" value="Удалить все неотправленные">
+                        <input class="btn btn-danger me-2" type="submit" value="Удалить все неотправленные"
+                               formaction="/messages/history/delete_all">
                     </div>
                 </form>
             </div>
@@ -61,11 +63,12 @@
         </div>
         <div class="d-flex flex-column flex-md-row gap-1">
             <div class="">
-                <input class="btn btn-primary me-2" type="submit" form="tableForm" value="Отправить выбранные">
+                <input class="btn btn-primary me-2" type="submit" form="tableForm" value="Отправить выбранные"
+                       formaction="/messages/history/resend_selected">
             </div>
             <div class="">
                 <input class="btn btn-danger me-2" type="submit" form="tableForm" value="Удалить выбранные"
-                       formaction="/messages/history/delete">
+                       formaction="/messages/history/delete_selected">
             </div>
         </div>
     </div>

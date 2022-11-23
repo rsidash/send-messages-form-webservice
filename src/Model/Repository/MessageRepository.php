@@ -5,8 +5,8 @@ namespace App\Model\Repository;
 use App\Model\Entity\Message;
 use App\services\SendStatus;
 use config\Database;
-use Doctrine\DBAL\Types\Types;
 use PDO;
+use Exception;
 
 class MessageRepository
 {
@@ -76,34 +76,31 @@ class MessageRepository
         return $result;
     }
 
-    public function getNotSendByIds(array $data): array
+    /**
+     * @throws Exception
+     */
+    public function getNotSendById(int $id): Message
     {
         $result = [];
-
-        $placeholders = array_fill( 0, count($data), '?' );
-        $placeholderString = implode( ',', $placeholders );
 
         $sql = "SELECT * FROM {$this->table}
                 WHERE deleted_at IS NULL
                 AND is_send = {$this->statuses['notSend']['statusCode']}
-                AND id in ({$placeholderString})";
+                AND id = :id";
 
         $stmt = $this->connection->prepare($sql);
 
-        $i = 1;
-        foreach( $data AS $id ) {
-            $stmt->bindValue($i++, $id);
-        }
+        $stmt->bindValue("id", $id);
 
         $stmt->execute();
 
-        $records = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $record = $stmt->fetch(PDO::FETCH_OBJ);
 
-        foreach ($records as $record) {
-            $result[] = new Message(json_decode(json_encode($record),true));
+        if (!$record) {
+            throw new Exception('No data found');
         }
 
-        return $result;
+        return new Message(json_decode(json_encode($record),true));
     }
 
     public function create(array $data): Message

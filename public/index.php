@@ -20,7 +20,9 @@ $app->get('/', Controllers\IndexController::class . ':home');
 $app->get('/messages', Controllers\MessagesController::class . ':index');
 $app->post('/messages', Controllers\MessagesController::class . ':send');
 $app->get('/messages/history', Controllers\MessagesController::class . ':history');
-$app->post('/messages/history', Controllers\MessagesController::class . ':resend');
-$app->post('/messages/history/delete', Controllers\MessagesController::class . ':delete');
+$app->post('/messages/history/resend_all', Controllers\MessagesController::class . ':resendAll');
+$app->post('/messages/history/resend_selected', Controllers\MessagesController::class . ':resendSelected');
+$app->post('/messages/history/delete_all', Controllers\MessagesController::class . ':deleteAllNotSend');
+$app->post('/messages/history/delete_selected', Controllers\MessagesController::class . ':deleteSelectedNotSend');
 
 $app->run();
