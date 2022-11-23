@@ -7,14 +7,17 @@ use App\Model\Validators\MessageValidator;
 use App\services\GuzzleClient;
 use App\services\Notifications\TGNotifier;
 use App\services\SendStatus;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\ServerRequest;
 use Slim\Http\Response;
 use Slim\Views\Twig;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class MessagesController
 {
     private MessageValidator $validator;
-    private GuzzleClient $guzzleClient;
     private MessageRepository $repo;
     private TGNotifier $notifier;
 
@@ -22,11 +25,15 @@ class MessagesController
     {
         $this->repo = new MessageRepository();
         $this->validator = new MessageValidator();
-        $this->guzzleClient = new GuzzleClient();
         $this->notifier = new TGNotifier();
     }
 
-    public function index(ServerRequest $request, Response $response)
+    /**
+     * @throws SyntaxError
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
+    public function index(ServerRequest $request, Response $response): ResponseInterface
     {
         $view = Twig::fromRequest($request);
 
@@ -35,7 +42,12 @@ class MessagesController
         ]);
     }
 
-    public function history(ServerRequest $request, Response $response)
+    /**
+     * @throws SyntaxError
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
+    public function history(ServerRequest $request, Response $response): ResponseInterface
     {
         $status = $request->getParam('status') ?? 'all';
         $orderByDirection = $request->getParam('orderBy') ?? 'desc';
@@ -65,7 +77,12 @@ class MessagesController
         ]);
     }
 
-    public function send(ServerRequest $request, Response $response)
+    /**
+     * @throws SyntaxError
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
+    public function send(ServerRequest $request, Response $response): ResponseInterface
     {
         $sendError = '';
 
@@ -92,7 +109,7 @@ class MessagesController
         ]);
     }
 
-    public function resend(ServerRequest $request, Response $response)
+    public function resend(ServerRequest $request, Response $response): Response|ResponseInterface
     {
         $selectedIds = $request->getParam('selectedIds') ?? [];
 

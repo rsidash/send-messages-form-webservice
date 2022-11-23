@@ -21,7 +21,7 @@ class MessageRepository
         $this->table = 'messages';
     }
 
-    public function getAll(string $orderByDirection)
+    public function getAll(string $orderByDirection): array
     {
         $result = [];
 
@@ -37,7 +37,7 @@ class MessageRepository
         return $result;
     }
 
-    public function filterByStatus(string $status, string $orderByDirection)
+    public function filterByStatus(string $status, string $orderByDirection): array
     {
         $result = [];
 
@@ -58,7 +58,7 @@ class MessageRepository
         return $result;
     }
 
-    public function getNotSend()
+    public function getNotSend(): array
     {
         $result = [];
         $statuses = SendStatus::getSendStatus();
@@ -75,7 +75,7 @@ class MessageRepository
         return $result;
     }
 
-    public function getNotSendByIds(array $data)
+    public function getNotSendByIds(array $data): array
     {
         $result = [];
         $statuses = SendStatus::getSendStatus();

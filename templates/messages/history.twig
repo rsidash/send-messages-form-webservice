@@ -11,7 +11,7 @@
     <div>
         <h1>История сообщений</h1>
         <br>
-        <div class="d-flex flex-column flex-md-row">
+        <div class="d-flex flex-column flex-md-row gap-1">
             <div class="me-auto">
                 <form action="/messages/history" method="post">
                     <div>
@@ -56,12 +56,12 @@
     <form action="/messages/history" method="post">
         <div class="mb-2">
             <input class="btn btn-primary me-2" type="submit" value="Отправить выбранные неотправленные">
-        </div>
+        </div></form>
         <div>
             <div class="table-responsive">
                 <table class="table table-hover">
                     <tr>
-                        <th>Выбрать</th>
+                        <th></th>
                         <th>Текст сообщения</th>
                         <th>Дата последней отправки</th>
                         <th>Статус</th>
@@ -83,5 +83,5 @@
                 </table>
             </div>
         </div>
-    </form>
+
 {% endblock %}

@@ -7,10 +7,8 @@ use PDOException;
 
 class Database
 {
-    public function getConnection()
+    public function getConnection(): PDO
     {
-        $connection = null;
-
         try {
             $connection = new PDO("mysql:host=" . $_ENV['DB_HOST'] . ";dbname=" . $_ENV['DB_NAME'], $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
         } catch(PDOException $e) {

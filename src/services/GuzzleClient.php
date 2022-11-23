@@ -13,7 +13,7 @@ class GuzzleClient
      * @return string
      * @throws GuzzleException
      */
-    public function send(string $uri, string $message)
+    public function send(string $uri, string $message): string
     {
         $client = new Client([
             'headers' => [ 'Content-Type' => 'application/json' ],

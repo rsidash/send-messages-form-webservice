@@ -16,7 +16,7 @@ class TGNotifier
         $this->guzzleClient = new GuzzleClient();
     }
 
-    public function notify(array $data, string $message)
+    public function notify(array $data, string $message): array
     {
         $error = '';
         $statuses = SendStatus::getSendStatus();

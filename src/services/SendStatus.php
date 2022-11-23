@@ -9,7 +9,7 @@ class SendStatus
         'send' => ['statusCode' => 1, 'title' => 'Отправлено'],
     ];
 
-    public static function getSendStatus()
+    public static function getSendStatus(): array
     {
         return self::SEND_STATUSES;
     }
