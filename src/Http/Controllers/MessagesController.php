@@ -94,13 +94,11 @@ class MessagesController
         $view = Twig::fromRequest($request);
 
         if (empty($validationErrors)) {
-            $notification = $this->notifier->notify($message);
+            $notification = $this->makeNotification(['text' => $message]);
 
-            $sendError = $notification['error'];
+            $sendError = $notification['reason'];
 
-            $data = array_merge($notification['data'], ['text' => $message], ['reason' => $notification['error']]);
-
-            $this->repo->create($data);
+            $this->repo->create($notification);
         }
 
         return $view->render($response, 'messages/index.twig', [
@@ -114,9 +112,7 @@ class MessagesController
     {
         $notSendMessages = $this->repo->getNotSend();
 
-        foreach ($notSendMessages as $message) {
-            $this->makeNotification($message);
-        }
+        $this->makeResendNotification($notSendMessages);
 
         return $response->withRedirect('/messages/history');
     }
@@ -137,9 +133,7 @@ class MessagesController
             }
         }
 
-        foreach ($notSendMessages as $message) {
-            $this->makeNotification($message);
-        }
+        $this->makeResendNotification($notSendMessages);
 
         return $response->withRedirect('/messages/history');
     }
@@ -162,12 +156,19 @@ class MessagesController
         return $response->withRedirect('/messages/history');
     }
 
-    private function makeNotification(Message $message): void
+    private function makeNotification(array $message, array $data = []): array
     {
-        $notification = $this->notifier->notify($message->getText());
+        $notification = $this->notifier->notify($message['text']);
 
-        $data = array_merge($notification['data'], ['id' => $message->getId()], ['reason' => $notification['error']]);
+        return array_merge($notification['data'], ['reason' => $notification['error']], $message, $data);
+    }
 
-        $this->repo->update($data);
+    private function makeResendNotification(array $notSendMessages): void
+    {
+        foreach ($notSendMessages as $message) {
+            $data = array_merge(['id' => $message->getId()]);
+            $notification = $this->makeNotification($message->toArray(), $data);
+            $this->repo->update($notification);
+        }
     }
 }
