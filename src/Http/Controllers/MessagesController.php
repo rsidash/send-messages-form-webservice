@@ -163,7 +163,6 @@ class MessagesController
         return array_merge(
             $notification['data'],
             ['reason' => $notification['error']],
-            ['id' => $message['id']],
             ['text' => $message['text']]
         );
     }
@@ -172,8 +171,9 @@ class MessagesController
     {
         foreach ($notSendMessages as $message) {
             $notification = $this->makeNotification($message->toArray());
+            $data = array_merge(['id' => $message->getId()], $notification);
 
-            $this->repo->update($notification);
+            $this->repo->update($data);
         }
     }
 }
