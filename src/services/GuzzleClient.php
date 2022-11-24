@@ -4,16 +4,16 @@ namespace App\services;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Response;
 
 class GuzzleClient
 {
     /**
      * @param string $uri
      * @param string $message
-     * @return string
-     * @throws GuzzleException
+     * @return Response
      */
-    public function send(string $uri, string $message): string
+    public function send(string $uri, string $message): Response
     {
         $client = new Client([
             'headers' => [ 'Content-Type' => 'application/json' ],
