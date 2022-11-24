@@ -156,18 +156,22 @@ class MessagesController
         return $response->withRedirect('/messages/history');
     }
 
-    private function makeNotification(array $message, array $data = []): array
+    private function makeNotification(array $message): array
     {
         $notification = $this->notifier->notify($message['text']);
 
-        return array_merge($notification['data'], ['reason' => $notification['error']], $data, ['text' => $message['text']]);
+        return array_merge(
+            $notification['data'],
+            ['reason' => $notification['error']],
+            ['id' => $message['id']],
+            ['text' => $message['text']]
+        );
     }
 
     private function makeResendNotification(array $notSendMessages): void
     {
         foreach ($notSendMessages as $message) {
-            $data = array_merge(['id' => $message->getId()]);
-            $notification = $this->makeNotification($message->toArray(), $data);
+            $notification = $this->makeNotification($message->toArray());
 
             $this->repo->update($notification);
         }
