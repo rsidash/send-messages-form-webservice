@@ -1,0 +1,46 @@
+{% extends "base.twig" %}
+
+{% block body %}
+    {% embed "header.twig" %}
+        {% block menuItem %}
+            <li><a href="/messages/history" class="nav-link px-2">История сообщений</a></li>
+        {% endblock %}
+    {% endembed %}
+
+    <div class="">
+        <h1>Сервис отправки сообщений</h1>
+        <br>
+        <form class="" action="/messages" method="post">
+            {% if validationErrors is not empty %}
+                <div class="alert alert-danger" role="alert">При отправке произошла ошибка
+                    <ul>
+                        {% for validationError in validationErrors %}
+                            <li>
+                                {{ validationError }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            {% if sendError is empty and validationErrors is empty and not isFirstLaunch %}
+                <div class="alert alert-success" role="alert">
+                    <p>Сообщение успешно отправлено</p>
+                    <p><label>Отправленное сообщение:</label></p>
+                    <p class="fst-italic">{{ message }}</p>
+                </div>
+            {% elseif sendError and validationErrors is empty %}
+                <div class="alert alert-danger" role="alert">
+                    <p><label>При отправке произошла следующая ошибка:</label></p>
+                    <p class="fst-italic">{{ sendError }}</p>
+                </div>
+            {% endif %}
+            <div>
+                <label>Введите сообщение:</label>
+                <textarea class="form-control" rows="4" cols="50" placeholder="Ваше сообщение..."
+                          name="message">{% if validationErrors or sendError is not empty %}{{ message }}{% endif %}</textarea>
+                <br>
+                <input class="btn btn-primary" type="submit" value="Отправить">
+            </div>
+        </form>
+    </div>
+{% endblock %}
